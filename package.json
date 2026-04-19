@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "concurrently": "^9.2.1"
+  },
+  "scripts": {
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "cd CricAddaBackend && npm run dev",
+    "client": "cd CricAdda && npm run dev"
+  }
+  
+}
+
