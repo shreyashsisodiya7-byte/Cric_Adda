@@ -202,7 +202,7 @@ const renderRatingStars = (rating) => {
                 />
               </div>
             ) : (
-              <div className="mb-4 h-40 w-40 mx-auto rounded-full bg-gradient-to-br from-blue-500 via-violet-600 to-pink-500 flex items-center justify-center text-4xl font-extrabold text-white shadow-lg shadow-slate-950/30">
+              <div className="mb-4 h-40 w-40 mx-auto rounded-full bg-linear-to-br from-blue-500 via-violet-600 to-pink-500 flex items-center justify-center text-4xl font-extrabold text-white shadow-lg shadow-slate-950/30">
                 {player.name ? player.name.charAt(0).toUpperCase() : "?"}
               </div>
             )}

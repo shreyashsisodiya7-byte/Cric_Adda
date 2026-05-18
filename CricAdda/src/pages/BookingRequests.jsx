@@ -199,7 +199,7 @@ function BookingRequests() {
             </div>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               {TAB_OPTIONS.filter((tab) => tab.key !== "all").map((tab) => (
-                <div key={tab.key} className="rounded-3xl bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800/90 border border-slate-800 px-4 py-4 text-center shadow-lg shadow-slate-950/20">
+                <div key={tab.key} className="rounded-3xl bg-linear-to-br from-slate-950 via-slate-900 to-slate-800/90 border border-slate-800 px-4 py-4 text-center shadow-lg shadow-slate-950/20">
                   <p className="text-xs uppercase tracking-[0.3em] text-slate-400">{tab.label}</p>
                   <p className="mt-2 text-3xl font-semibold text-white">{countByCategory(allRequests, tab.key)}</p>
                 </div>

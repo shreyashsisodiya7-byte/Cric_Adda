@@ -80,7 +80,7 @@ const PlayerProfile = () => {
           </div>
         ) : (
           <div className="mb-8 text-center">
-            <div className="w-40 h-40 mx-auto rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-5xl font-bold shadow-lg border-4 border-blue-500">
+            <div className="w-40 h-40 mx-auto rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-5xl font-bold shadow-lg border-4 border-blue-500">
               {player.name.charAt(0).toUpperCase()}
             </div>
           </div>
@@ -99,7 +99,7 @@ const PlayerProfile = () => {
               <input
                 value={item.value}
                 disabled
-                className="w-full px-4 py-2 rounded-xl bg-gradient-to-r from-gray-700 to-gray-800 focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-gray-900 outline-none"
+                className="w-full px-4 py-2 rounded-xl bg-linear-to-r from-gray-700 to-gray-800 focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-gray-900 outline-none"
               />
             </div>
           ))}
@@ -112,7 +112,7 @@ const PlayerProfile = () => {
             value={player.about}
             disabled
             rows="4"
-            className="w-full px-4 py-2 rounded-xl bg-gradient-to-r from-gray-700 to-gray-800 outline-none"
+            className="w-full px-4 py-2 rounded-xl bg-linear-to-r from-gray-700 to-gray-800 outline-none"
           />
         </div>
 
