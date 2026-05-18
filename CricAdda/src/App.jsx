@@ -1,5 +1,6 @@
 import VideoState from '../src/context/VideoState'
 import AppContent from './components/AppContent';
+import './App.css';
 
 
 const App = () => {

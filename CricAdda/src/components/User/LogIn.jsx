@@ -2,6 +2,7 @@ import React, { useContext, useState } from "react";
 import UniversalContext from "../../context/UniversalContext";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { API_URL } from "../../api";
 
 function Login() {
     const { register, handleSubmit, formState: { errors }, reset } = useForm()
@@ -28,7 +29,7 @@ function Login() {
         setLoading(true)
         setError("")
         try{
-            const response = await fetch('http://localhost:3000/user/login',{ // removed trailing space
+            const response = await fetch(`${API_URL}/user/login`,{ // removed trailing space
                 method :'POST',
                 headers : {
                     'Content-type' : 'application/json'
@@ -46,6 +47,8 @@ function Login() {
                 localStorage.setItem('token', result.token);
                 if (result.user) {
                   localStorage.setItem('user', JSON.stringify(result.user));
+                  localStorage.setItem('userId', result.user._id);
+                  localStorage.setItem('userName', result.user.Fullname);
                 }
                 reset()
                 navigate("/")

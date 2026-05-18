@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "server": "cd CricAddaBackend && npm run dev",
-    "client": "cd CricAdda && npm run dev"
+    "client": "cd CricAdda && npm run dev",
+    "build": "cd CricAdda && npm install && npm run build",
+    "vercel-build": "cd CricAdda && npm install && npm run build"
   }
   
 }

@@ -3,6 +3,7 @@ import {useNavigate} from "react-router-dom"
 import axios from "axios"
 import { useContext } from "react";
 import UniversalContext from "../context/UniversalContext";
+import { API_URL, UPLOADS_URL } from "../api";
 
 export default function PlayerProfile() {
 
@@ -38,7 +39,7 @@ useEffect(() => {
 
       const res = await axios.get(
 
-        `http://localhost:3000/players/profile/${user._id}`
+        `${API_URL}/players/profile/${user._id}`
 
       );
 
@@ -67,7 +68,7 @@ useEffect(() => {
         const photoUrl = data.photo
           ? data.photo.startsWith("http")
             ? data.photo
-            : `http://localhost:3000/uploads/${data.photo}`
+            : `${UPLOADS_URL}/${data.photo}`
           : "";
         setPhoto(photoUrl);
       }
@@ -126,7 +127,7 @@ const saveProfile = async () => {
     
     await axios.put(
       
-      `http://localhost:3000/players/update/${user._id}`,
+      `${API_URL}/players/update/${user._id}`,
       formData
     )
 
@@ -150,7 +151,7 @@ const UserLogout = ()=>{
   localStorage.removeItem("user")
 
   setToken("")
-  Navigate("/Log_SIgnUp")
+  Navigate("/Log_SignUp")
 }
 
 
@@ -207,10 +208,10 @@ className="w-full p-3 rounded-lg bg-[#020617] border border-gray-700"
 
 <select value={role} onChange={(e)=>setRole(e.target.value)} disabled={!editMode} className="w-full p-3 rounded-lg bg-[#020617] border border-gray-700">
 
-<option>🏏 Batsman</option>
-<option>🎯 Bowler</option>
-<option>⭐ All Rounder</option>
-<option>🧤 Wicket Keeper</option>
+<option>Batsman</option>
+<option>Bowler</option>
+<option>All Rounder</option>
+<option>Wicket Keeper</option>
 
 </select>
 

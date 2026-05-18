@@ -31,7 +31,7 @@ export const registerUserController = async (req, res) => {
       userType: "Player",
       role: "🏏 Batsman",
       city: "",
-      fee: "",
+      fee: 0,
       note: "",
       about: "",
       status: "Available",

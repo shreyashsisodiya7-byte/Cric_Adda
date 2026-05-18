@@ -6,6 +6,9 @@ import Tournaments from '../pages/Tournaments'
 import How_It_Works from '../pages/How_It_Works'
 import Log_SignUp from '../pages/Log_SignUp'
 import Profile from '../pages/Profile'
+import PlayerProfile from '../pages/PlayerProfile'
+import BookingRequests from '../pages/BookingRequests'
+import Messages from '../pages/Messages'
 
 const AppRoutes = () => {
   return (
@@ -17,6 +20,9 @@ const AppRoutes = () => {
             <Route path='/How_It_Works' element={<How_It_Works />} />
             <Route path='/Log_SignUp' element={ <Log_SignUp />} />
             <Route path='/Profile' element={<Profile />} />
+            <Route path='/messages' element={<Messages />} />
+            <Route path='/PlayerProfile/:id' element={<PlayerProfile />} />
+            <Route path='/BookingRequests' element={<BookingRequests />} />
         </Routes>
     </div>
   )

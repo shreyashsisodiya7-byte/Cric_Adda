@@ -2,6 +2,7 @@ import React, { useContext, useState } from "react";
 import UniversalContext from "../../context/UniversalContext";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { API_URL } from "../../api";
 
 export default function Signup() {
   const { setToggler } = useContext(UniversalContext)
@@ -24,7 +25,7 @@ export default function Signup() {
     setLoading(true)
     setError("")
     try{
-    const response = await fetch('http://localhost:3000/user/Signup',{
+    const response = await fetch(`${API_URL}/user/Signup`,{
       method : 'POST',
       headers : {
         'Content-Type' : 'application/json'
@@ -40,6 +41,8 @@ export default function Signup() {
     if (response.ok) {
       localStorage.setItem('token',result.token)
       localStorage.setItem('user', JSON.stringify(result.user))
+      localStorage.setItem('userId', result.user._id)
+      localStorage.setItem('userName', result.user.Fullname)
       console.log("Signup successful")
       reset()
       navigate('/')

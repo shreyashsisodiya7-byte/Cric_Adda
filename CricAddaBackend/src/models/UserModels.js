@@ -6,5 +6,5 @@ Email : {type:String},
 Password : {type:String}
 })
 
-const userModel = mongoose.model('use',userSchema)
+const userModel = mongoose.model('user',userSchema)
 export default userModel
