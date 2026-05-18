@@ -1,0 +1,11 @@
+# Ignore environment files
+CricAdda/.env
+CricAddaBackend/.env
+
+# Ignore local docs and archives created during development
+docs/
+archives/
+scripts/
+
+# Ignore backend uploads folder
+CricAddaBackend/uploads/

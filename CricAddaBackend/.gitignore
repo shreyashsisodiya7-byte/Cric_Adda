@@ -1,0 +1,8 @@
+# Ignore local env file
+.env
+
+# Ignore uploaded media files
+uploads/
+
+# Ignore packages and local build outputs
+node_modules/
