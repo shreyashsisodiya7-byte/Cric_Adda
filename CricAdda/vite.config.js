@@ -2,13 +2,14 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
-// https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(),tailwindcss()],
-   server: {
-    host: true, // allow external access
-    allowedHosts: [
-      'sternness-spotty-exhale.ngrok-free.dev'
-    ]
+  base: '/',
+  plugins: [react(), tailwindcss()],
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+  },
+  server: {
+    host: true,
   }
 })
