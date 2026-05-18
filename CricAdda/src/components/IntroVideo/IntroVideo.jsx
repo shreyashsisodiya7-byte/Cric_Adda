@@ -7,14 +7,19 @@ const IntroVideo = ({ onFinish }) => {
  const {setVideoEnded} = useContext(UniversalContext)
 
   useEffect(() => {
+    const played = sessionStorage.getItem("introPlayed");
+if (played) {
+  setVideoEnded(true);
+  return;
+}
     const video = videoRef.current;
 
     if (video && video.paused) {
       video.play().catch(() => {});
     }
-
+const fallback = setTimeout(() => setVideoEnded(true), 5000);
     const handleEnd = () => {
-      
+      clearTimeout(fallback);
       video.pause();
       sessionStorage.setItem("introPlayed", "true");
       video.currentTime = video.duration;
