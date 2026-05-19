@@ -5,6 +5,8 @@ import PlayerRoutes from "./routes/PlayerRoutes.js"
 import BookingRoutes from "./routes/BookingRoutes.js"
 import MessageRoutes from "./routes/MessageRoutes.js"
 import { verifyToken } from "./middlerware/authMiddleware.js"
+import AdminRoutes from "./routes/AdminRoutes.js"   
+
 
 const app = express()
 
@@ -21,5 +23,6 @@ app.use("/players",verifyToken,PlayerRoutes)
 app.use("/bookings",verifyToken,BookingRoutes)
 app.use("/messages",verifyToken,MessageRoutes)
 app.use("/uploads",express.static("uploads"))
+app.use("/admin",verifyToken, AdminRoutes)
 
 export default app

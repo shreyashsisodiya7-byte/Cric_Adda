@@ -5,6 +5,8 @@ import jwt from "jsonwebtoken";
 const loginUserController = async (req, res) => {
   try {
     const { Email, Password } = req.body;
+     console.log("LOGIN BODY:", req.body);        // ← ADD THIS
+    console.log("EMAIL FOUND:", Email);  
 
     if (!Email || !Password) {
       return res
@@ -13,6 +15,7 @@ const loginUserController = async (req, res) => {
     }
 
     const user = await userModel.findOne({ Email });
+    console.log("USER FROM DB:", user); 
     if (!user) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
@@ -27,8 +30,9 @@ const loginUserController = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "7d" },
     );
-    const { Password, ...safeUser } = user.toObject();
-    res.json({ user: safeUser });
+    const safeUser = user.toObject();
+    delete safeUser.Password;
+
     return res
       .status(200)
       .json({ message: "Login successful", token, user: safeUser });

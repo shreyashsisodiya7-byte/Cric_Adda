@@ -21,7 +21,14 @@ const NavBar = () => {
     const loadProfilePhoto = async () => {
       if (!user?._id) return
       try {
-        const res = await axios.get(`${API_URL}/players/profile/${user._id}`)
+        const res = await axios.get(
+      `${API_URL}/players/profile/${user._id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${t}`,
+        },
+      }
+    )
         const data = res.data.data
 
         if (data) {
@@ -40,7 +47,13 @@ const NavBar = () => {
     const loadUnreadMessages = async () => {
       if (!user?._id) return
       try {
-        const res = await axios.get(`${API_URL}/messages/conversations/${user._id}`)
+        const res = await axios.get(`${API_URL}/messages/conversations/${user._id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${t}`,
+            },
+          }
+        )
         const conversations = res.data.data || []
         const storedSeen = localStorage.getItem("conversationSeenTimes")
         const seenTimes = storedSeen ? JSON.parse(storedSeen) : {}

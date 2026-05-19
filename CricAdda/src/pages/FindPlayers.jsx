@@ -56,6 +56,8 @@ const renderRatingStars = (rating) => {
   const currentUserCity = localStorage.getItem("userCity") || "";
   const defaultCity = currentUserCity || "";
 
+  const token = localStorage.getItem("token");
+
  useEffect(() => {
    setSearchCity(defaultCity);
 
@@ -64,7 +66,12 @@ const renderRatingStars = (rating) => {
       setLoading(true);
       setError(null);
       const res = await axios.get(
-      `${API_URL}/players/all`
+      `${API_URL}/players/all`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
     );
     if (res.data.success) {
       setPlayers(res.data.data || []);

@@ -71,6 +71,14 @@ function BookingModal({ playerId, playerName, playerFee, onClose, onSuccess, own
 
       console.log("Booking data being sent:", bookingData);
       console.log("API URL:", `${API_URL}/bookings/request`);
+      console.log("ownerId:", ownerId);
+console.log("ownerName:", ownerName);
+console.log("playerId:", playerId);
+console.log("playerName:", playerName);
+console.log("eventName:", formData.eventName);
+console.log("eventDate:", formData.eventDate);
+
+      const token = localStorage.getItem("token");
 
       // Create booking request
       const response = await axios.post(
@@ -78,7 +86,8 @@ function BookingModal({ playerId, playerName, playerFee, onClose, onSuccess, own
         bookingData,
         {
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
           }
         }
       );

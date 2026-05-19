@@ -31,9 +31,9 @@ function Login() {
         try{
             const response = await fetch(`${API_URL}/user/login`,{ // removed trailing space
                 method :'POST',
-                headers : {
-                    'Content-type' : 'application/json'
-                },
+                headers: {
+  'Content-Type': 'application/json'
+},
                 body : JSON.stringify({
                     Email : data.Email,
                     Password : data.Password,

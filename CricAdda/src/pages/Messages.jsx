@@ -17,6 +17,7 @@ const Messages = () => {
 
   const currentUserId = localStorage.getItem("userId");
   const currentUserName = localStorage.getItem("userName");
+  const token = localStorage.getItem("token");
 
   const saveConversationSeenTimes = (seenTimes) => {
     localStorage.setItem(MESSAGE_SEEN_KEY, JSON.stringify(seenTimes));
@@ -54,7 +55,9 @@ const Messages = () => {
     try {
       setLoading(true);
       const res = await axios.get(
-        `${API_URL}/messages/conversations/${currentUserId}`
+        `${API_URL}/messages/conversations/${currentUserId}`, {
+  headers: { Authorization: `Bearer ${token}` }
+}
       );
       const conversationsWithFlags = (res.data.data || []).map((conv) => {
         const lastTime = conv.lastMessageTime
@@ -87,7 +90,10 @@ const Messages = () => {
   const fetchMessages = async () => {
     try {
       const res = await axios.get(
-        `${API_URL}/messages/booking/${selectedConversation.bookingId}`
+        `${API_URL}/messages/booking/${selectedConversation.bookingId}`,
+         {
+  headers: { Authorization: `Bearer ${token}` }
+}
       );
       setMessages(res.data.data || []);
     } catch (error) {
@@ -112,7 +118,9 @@ const Messages = () => {
         receiverId: selectedConversation.otherUserId,
         receiverName: selectedConversation.otherUserName,
         text: messageText,
-      });
+      }, {
+  headers: { Authorization: `Bearer ${token}` }
+});
 
       setMessageText("");
       fetchMessages();

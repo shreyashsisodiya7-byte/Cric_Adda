@@ -26,6 +26,7 @@ const [file, setFile] = useState(null)
 const {setToken} = useContext(UniversalContext)
 
 const calculatedStrikeRate = (stats.runs / stats.matches).toFixed(2);
+const token = localStorage.getItem("token");
 
 const Navigate = useNavigate();
 
@@ -39,7 +40,8 @@ useEffect(() => {
 
       const res = await axios.get(
 
-        `${API_URL}/players/profile/${user._id}`
+        `${API_URL}/players/profile/${user._id}`,
+        { headers: { Authorization: `Bearer ${token}` } }
 
       );
 
@@ -143,9 +145,33 @@ const saveProfile = async () => {
   
 };
 
+const deleteAccount = async () => {
+  const confirmed = window.confirm(
+    "Are you sure you want to delete your account? This cannot be undone."
+  );
+  if (!confirmed) return;
 
+  try {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = localStorage.getItem("token");
+
+    await axios.delete(`${API_URL}/user/delete/${user._id}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    // Clear everything and redirect
+    localStorage.clear();
+    setToken("");
+    Navigate("/Log_SignUp");
+  } catch (error) {
+    alert("Failed to delete account. Please try again.");
+    console.log(error);
+  }
+};
 
 const UserLogout = ()=>{
+
+
 
   localStorage.removeItem("token")
   localStorage.removeItem("user")
@@ -154,9 +180,9 @@ const UserLogout = ()=>{
   Navigate("/Log_SignUp")
 }
 
-
-
 return(
+
+
 
 <div className="min-h-screen mt-8 text-white bg-linear-to-br from-[#020617] via-[#0B1220] to-[#020617] px-6 md:px-24 py-12">
 
@@ -401,6 +427,12 @@ Log out
 </button>
 
 </div>
+<button
+  onClick={deleteAccount}
+  className="bg-linear-to-r from-[#7f0000] to-[#3d0000] px-10 py-4 text-xl rounded-xl border border-red-800 hover:opacity-80 transition"
+>
+  🗑️ Delete Account
+</button>
 
 </div>
 

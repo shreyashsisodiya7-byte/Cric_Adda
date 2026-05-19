@@ -54,14 +54,16 @@ export default function HomePage() {
 
     const checkNotifications = async () => {
       try {
+        const token = localStorage.getItem("token");        
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};  
         const bookingEndpoint =
           userType === "Owner"
             ? `${API_URL}/bookings/owner/${userId}`
             : `${API_URL}/bookings/player/${userId}/all`;
 
         const [bookingRes, convoRes] = await Promise.all([
-          axios.get(bookingEndpoint),
-          axios.get(`${API_URL}/messages/conversations/${userId}`),
+          axios.get(bookingEndpoint,{ headers }),
+          axios.get(`${API_URL}/messages/conversations/${userId}`,{ headers }),
         ]);
 
         const bookingItems = bookingRes.data.requests || bookingRes.data.bookings || [];

@@ -17,13 +17,18 @@ const PlayerProfile = () => {
   const currentUserId = localStorage.getItem("userId");
   const currentUserName = localStorage.getItem("userName");
   const currentUserCity = localStorage.getItem("userCity") || "";
+  const token = localStorage.getItem("token");
 
 
 
   useEffect(() => {
     const fetchPlayer = async () => {
       try {
-        const res = await axios.get(`${API_URL}/players/profile/${id}`);
+        const res = await axios.get(`${API_URL}/players/profile/${id}`,
+           {
+  headers: { Authorization: `Bearer ${token}` }
+}
+        );
         setPlayer(res.data.data);
       } catch (error) {
         console.log(error);

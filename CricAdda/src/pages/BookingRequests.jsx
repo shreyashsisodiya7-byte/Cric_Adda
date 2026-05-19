@@ -63,6 +63,7 @@ function BookingRequests() {
   const userId = user._id || localStorage.getItem("userId");
   const userType = user.userType || localStorage.getItem("userType") || "Player";
   const isOwner = userType === "Owner";
+  const token = localStorage.getItem("token");
 
   const fetchRequests = async () => {
     try {
@@ -74,7 +75,9 @@ function BookingRequests() {
           ? `/bookings/owner/${userId}`
           : `/bookings/player/${userId}/all`;
 
-      const response = await axios.get(`${API_URL}${endpoint}`);
+const response = await axios.get(`${API_URL}${endpoint}`, {
+  headers: { Authorization: `Bearer ${token}` }
+});
       if (response.data.success) {
         const items = response.data.requests || response.data.bookings || [];
         const currentIds = items.map((item) => item._id);
@@ -124,7 +127,10 @@ function BookingRequests() {
     try {
       const response = await axios.put(
         `${API_URL}/bookings/${bookingId}/accept`,
-        { playerResponse: responseMessage }
+        { playerResponse: responseMessage },
+         {
+  headers: { Authorization: `Bearer ${token}` }
+}
       );
       if (response.data.success) {
         alert("Request accepted! You can now message the owner.");
