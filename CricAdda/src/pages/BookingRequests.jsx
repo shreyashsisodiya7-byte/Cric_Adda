@@ -3,7 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { API_URL } from "../api";
 import { RateBookingButton, ReminderButton } from "../pages/PlayerRating";
-import MatchStatsModal from "../components/MatchStatsModal";
+import MatchStatsModal from "../components/Matchstatsmodal";
 
 // ── Google Fonts ──────────────────────────────────────────────────────────────
 const fontLink = document.createElement("link");
