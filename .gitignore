@@ -3,7 +3,6 @@ CricAdda/.env
 CricAddaBackend/.env
 
 # Ignore local docs and archives created during development
-docs/
 archives/
 scripts/
 

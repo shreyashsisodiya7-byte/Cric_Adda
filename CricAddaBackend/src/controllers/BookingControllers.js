@@ -1,6 +1,8 @@
 import Booking from "../models/BookingModels.js";
 import Player from "../models/PlayerModels.js";
 
+const dayStart = (d) => new Date(new Date(d).setHours(0, 0, 0, 0));
+
 // Create a booking request
 export const createBookingRequest = async (req, res) => {
   try {
@@ -20,31 +22,54 @@ export const createBookingRequest = async (req, res) => {
     } = req.body;
 
     console.log("Received booking request with data:", {
-      ownerId,
-      ownerName,
-      ownerCity,
-      playerId,
-      playerName,
-      eventName,
-      eventDate,
-      eventLocation,
-      eventType,
+      ownerId, ownerName, ownerCity, playerId, playerName, eventName, eventDate, eventLocation, eventType,
     });
 
     // Validate required fields
     if (!ownerId || !ownerName || !playerId || !playerName || !eventName || !eventDate) {
       const missingFields = [];
-      if (!ownerId) missingFields.push("ownerId");
-      if (!ownerName) missingFields.push("ownerName");
-      if (!playerId) missingFields.push("playerId");
-      if (!playerName) missingFields.push("playerName");
-      if (!eventName) missingFields.push("eventName");
-      if (!eventDate) missingFields.push("eventDate");
-      
+      if (!ownerId)      missingFields.push("ownerId");
+      if (!ownerName)    missingFields.push("ownerName");
+      if (!playerId)     missingFields.push("playerId");
+      if (!playerName)   missingFields.push("playerName");
+      if (!eventName)    missingFields.push("eventName");
+      if (!eventDate)    missingFields.push("eventDate");
       console.log("Missing fields:", missingFields);
       return res.status(400).json({
         success: false,
         message: `Missing required fields: ${missingFields.join(", ")}`,
+      });
+    }
+
+    // ── Block owner if they have unfilled post-match stats obligations ──────────
+    const pendingStats = await Booking.find({
+      ownerId,
+      status: "accepted",
+      statsSubmitted: false,
+      eventDate: { $lt: dayStart(new Date()) },
+    }).select("playerName eventName eventDate").limit(5);
+
+    if (pendingStats.length > 0) {
+      return res.status(403).json({
+        success: false,
+        blocked: true,
+        message: `You must submit post-match stats for ${pendingStats.length} completed booking(s) before making a new request.`,
+        pendingStatsBookings: pendingStats,
+      });
+    }
+
+    if (req.user.id.toString() !== ownerId.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not authorized to create a booking request for this owner ID.",
+      });
+    }
+
+    // ── Prevent self-booking (owner cannot book themselves) ──────────────────────
+    if (playerId.toString() === ownerId.toString()) {
+      return res.status(400).json({
+        success: false,
+        message: "You cannot book yourself. Please select a different player.",
       });
     }
 
@@ -60,18 +85,21 @@ export const createBookingRequest = async (req, res) => {
     }
     console.log("Player found:", player.name);
 
-    // Check if booking already exists (pending or accepted)
+    // Check if booking already exists or was rejected/cancelled recently
+    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
     const existingBooking = await Booking.findOne({
       ownerId,
       playerId,
-      eventDate: new Date(eventDate),
-      status: { $in: ["pending", "accepted"] },
+      $or: [
+        { status: { $in: ["pending", "accepted"] } },
+        { status: "rejected", respondedAt: { $gt: oneDayAgo } },
+      ],
     });
 
     if (existingBooking) {
       return res.status(400).json({
         success: false,
-        message: "A booking request already exists for this player",
+        message: "You already have a booking request with this player. Please wait 24 hours after rejection or cancellation before requesting again.",
       });
     }
 
@@ -154,12 +182,13 @@ export const getPlayerAllRequests = async (req, res) => {
 
     const requests = await Booking.find({
       playerId,
-    }).sort({ createdAt: -1 });
+    }).select("ownerId ownerName ownerCity playerId playerName eventName eventDate eventLocation eventType message fee notes status playerResponse createdAt respondedAt statsSubmitted matchStats")
+    .sort({ createdAt: -1 });
 
     return res.status(200).json({
       success: true,
       count: requests.length,
-      requests,
+      bookings: requests,
     });
   } catch (error) {
     console.error("Error fetching requests:", error);
@@ -190,6 +219,13 @@ export const acceptBookingRequest = async (req, res) => {
       return res.status(404).json({
         success: false,
         message: "Booking request not found",
+      });
+    }
+
+    if (booking.playerId.toString() !== req.user.id.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not authorized to accept this booking",
       });
     }
 
@@ -243,7 +279,21 @@ export const rejectBookingRequest = async (req, res) => {
       });
     }
 
-    if (booking.status !== "pending") {
+    if (booking.playerId.toString() !== req.user.id.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not authorized to reject this booking",
+      });
+    }
+
+    if (!playerResponse || !playerResponse.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: "A reason is required when rejecting a booking.",
+      });
+    }
+
+    if (!["pending", "accepted"].includes(booking.status)) {
       return res.status(400).json({
         success: false,
         message: `Booking is already ${booking.status}`,
@@ -251,7 +301,7 @@ export const rejectBookingRequest = async (req, res) => {
     }
 
     booking.status = "rejected";
-    booking.playerResponse = playerResponse || "Request rejected";
+    booking.playerResponse = playerResponse;
     booking.respondedAt = new Date();
 
     await booking.save();
@@ -349,7 +399,7 @@ export const cancelBookingRequest = async (req, res) => {
       });
     }
 
-    const booking = await Booking.findByIdAndDelete(bookingId);
+    const booking = await Booking.findById(bookingId);
 
     if (!booking) {
       return res.status(404).json({
@@ -358,9 +408,22 @@ export const cancelBookingRequest = async (req, res) => {
       });
     }
 
+    if (booking.ownerId.toString() !== req.user.id.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not authorized to cancel this booking",
+      });
+    }
+
+    booking.status = "rejected";
+    booking.playerResponse = "Cancelled by owner";
+    booking.respondedAt = new Date();
+    await booking.save();
+
     return res.status(200).json({
       success: true,
       message: "Booking request cancelled",
+      booking,
     });
   } catch (error) {
     console.error("Error cancelling booking request:", error);

@@ -6,6 +6,8 @@ import BookingRoutes from "./routes/BookingRoutes.js"
 import MessageRoutes from "./routes/MessageRoutes.js"
 import { verifyToken } from "./middlerware/authMiddleware.js"
 import AdminRoutes from "./routes/AdminRoutes.js"   
+import TournamentRoutes from "./routes/TournamentRoutes.js";
+import RatingRoutes from "./routes/RatingRoutes.js";
 
 
 const app = express()
@@ -19,10 +21,12 @@ app.use(express.urlencoded({ extended: true }))
 
 
 app.use("/user",UserRoutes)
-app.use("/players",verifyToken,PlayerRoutes)
+app.use("/players",PlayerRoutes)
 app.use("/bookings",verifyToken,BookingRoutes)
 app.use("/messages",verifyToken,MessageRoutes)
 app.use("/uploads",express.static("uploads"))
 app.use("/admin",verifyToken, AdminRoutes)
+app.use("/tournaments", TournamentRoutes);
+app.use("/ratings", verifyToken, RatingRoutes);
 
 export default app

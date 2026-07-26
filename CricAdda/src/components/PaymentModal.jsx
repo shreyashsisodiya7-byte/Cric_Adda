@@ -4,16 +4,10 @@ function PaymentModal({ amount, playerName, eventName, onClose, onPaymentSuccess
   const [paymentMethod, setPaymentMethod] = useState("upi");
   const [processing, setProcessing] = useState(false);
   const [upiId, setUpiId] = useState("");
-  const [cardDetails, setCardDetails] = useState({
-    cardNumber: "",
-    expiry: "",
-    cvv: "",
-  });
+  const [cardDetails, setCardDetails] = useState({ cardNumber: "", expiry: "", cvv: "" });
 
   const handlePayment = async () => {
     setProcessing(true);
-
-    // Simulate payment processing
     setTimeout(() => {
       alert(`Payment of ₹${amount} confirmed!\nBooking with ${playerName} is confirmed.`);
       onPaymentSuccess();
@@ -22,148 +16,144 @@ function PaymentModal({ amount, playerName, eventName, onClose, onPaymentSuccess
     }, 2000);
   };
 
+  const inputCls = "w-full px-4 py-2.5 rounded-xl bg-[#0a1628] border border-white/15 text-white placeholder-white/35 outline-none focus:border-[#f4b942] transition-colors text-sm";
+
+  const PaymentOption = ({ value, label, sub }) => (
+    <label
+      className={`flex items-center p-3.5 rounded-xl cursor-pointer transition-all ${
+        paymentMethod === value
+          ? "bg-[#f4b942]/10 border border-[#f4b942]/50"
+          : "border border-white/10 hover:bg-white/5"
+      }`}
+    >
+      <input
+        type="radio"
+        name="payment"
+        value={value}
+        checked={paymentMethod === value}
+        onChange={(e) => setPaymentMethod(e.target.value)}
+        className="mr-3 accent-[#f4b942]"
+      />
+      <div>
+        <p className={`font-semibold text-sm ${paymentMethod === value ? "text-[#f4b942]" : "text-white"}`}>{label}</p>
+        <p className="text-xs text-white/45 mt-0.5">{sub}</p>
+      </div>
+    </label>
+  );
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-gray-800 rounded-2xl p-6 max-w-md w-full">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div
+        className="bg-[#0d1e38] rounded-2xl p-6 max-w-md w-full shadow-2xl"
+        style={{ border: "1px solid rgba(255,255,255,0.1)" }}
+      >
+        {/* Header */}
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-white">Complete Payment</h2>
+          <div>
+            <h2 className="text-xl font-bold text-white">Complete Payment</h2>
+            <p className="text-white/45 text-xs mt-0.5">Secure payment powered by CricAdda</p>
+          </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-white text-2xl"
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-all"
           >
             ✕
           </button>
         </div>
 
         {/* Amount Summary */}
-        <div className="bg-gray-700 p-4 rounded-lg mb-6">
-          <p className="text-gray-300 text-sm">Event: {eventName}</p>
-          <p className="text-gray-300 text-sm">Player: {playerName}</p>
-          <div className="mt-3 pt-3 border-t border-gray-600">
-            <p className="text-xl font-bold text-green-400">
-              Total Amount: ₹{amount}
-            </p>
+        <div
+          className="p-4 rounded-xl mb-5"
+          style={{ background: "rgba(244,185,66,0.08)", border: "1px solid rgba(244,185,66,0.2)" }}
+        >
+          <div className="flex justify-between items-start">
+            <div>
+              <p className="text-white/50 text-xs uppercase tracking-wider">Event</p>
+              <p className="text-white font-semibold text-sm mt-0.5">{eventName}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-white/50 text-xs uppercase tracking-wider">Player</p>
+              <p className="text-white font-semibold text-sm mt-0.5">{playerName}</p>
+            </div>
+          </div>
+          <div className="mt-3 pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.1)" }}>
+            <div className="flex justify-between items-center">
+              <span className="text-white/60 text-sm">Total Amount</span>
+              <span className="text-2xl font-bold text-[#f4b942]" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
+                ₹{amount}
+              </span>
+            </div>
           </div>
         </div>
 
         {/* Payment Methods */}
-        <div className="space-y-4 mb-6">
-          <label className="flex items-center p-3 border border-gray-600 rounded-lg cursor-pointer hover:bg-gray-700">
-            <input
-              type="radio"
-              name="payment"
-              value="upi"
-              checked={paymentMethod === "upi"}
-              onChange={(e) => setPaymentMethod(e.target.value)}
-              className="mr-3"
-            />
-            <div>
-              <p className="font-medium text-white">UPI Payment</p>
-              <p className="text-sm text-gray-400">Google Pay, PhonePe, Paytm</p>
-            </div>
-          </label>
-
+        <div className="space-y-3 mb-5">
+          <PaymentOption value="upi" label="UPI Payment" sub="Google Pay, PhonePe, Paytm" />
           {paymentMethod === "upi" && (
             <input
               type="text"
               placeholder="Enter UPI ID (e.g., name@upi)"
               value={upiId}
               onChange={(e) => setUpiId(e.target.value)}
-              className="w-full px-3 py-2 bg-gray-700 text-white rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+              className={inputCls}
             />
           )}
 
-          <label className="flex items-center p-3 border border-gray-600 rounded-lg cursor-pointer hover:bg-gray-700">
-            <input
-              type="radio"
-              name="payment"
-              value="card"
-              checked={paymentMethod === "card"}
-              onChange={(e) => setPaymentMethod(e.target.value)}
-              className="mr-3"
-            />
-            <div>
-              <p className="font-medium text-white">Debit/Credit Card</p>
-              <p className="text-sm text-gray-400">Visa, Mastercard, RuPay</p>
-            </div>
-          </label>
-
+          <PaymentOption value="card" label="Debit / Credit Card" sub="Visa, Mastercard, RuPay" />
           {paymentMethod === "card" && (
-            <div className="space-y-3">
+            <div className="space-y-2.5">
               <input
                 type="text"
                 placeholder="Card Number"
                 maxLength="16"
                 value={cardDetails.cardNumber}
-                onChange={(e) =>
-                  setCardDetails({ ...cardDetails, cardNumber: e.target.value })
-                }
-                className="w-full px-3 py-2 bg-gray-700 text-white rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+                onChange={(e) => setCardDetails({ ...cardDetails, cardNumber: e.target.value })}
+                className={inputCls}
               />
-              <div className="flex gap-3">
+              <div className="flex gap-2.5">
                 <input
                   type="text"
                   placeholder="MM/YY"
                   maxLength="5"
                   value={cardDetails.expiry}
-                  onChange={(e) =>
-                    setCardDetails({ ...cardDetails, expiry: e.target.value })
-                  }
-                  className="flex-1 px-3 py-2 bg-gray-700 text-white rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+                  onChange={(e) => setCardDetails({ ...cardDetails, expiry: e.target.value })}
+                  className={inputCls}
                 />
                 <input
                   type="text"
                   placeholder="CVV"
                   maxLength="3"
                   value={cardDetails.cvv}
-                  onChange={(e) =>
-                    setCardDetails({ ...cardDetails, cvv: e.target.value })
-                  }
-                  className="flex-1 px-3 py-2 bg-gray-700 text-white rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+                  onChange={(e) => setCardDetails({ ...cardDetails, cvv: e.target.value })}
+                  className={inputCls}
                 />
               </div>
             </div>
           )}
 
-          <label className="flex items-center p-3 border border-gray-600 rounded-lg cursor-pointer hover:bg-gray-700">
-            <input
-              type="radio"
-              name="payment"
-              value="wallet"
-              checked={paymentMethod === "wallet"}
-              onChange={(e) => setPaymentMethod(e.target.value)}
-              className="mr-3"
-            />
-            <div>
-              <p className="font-medium text-white">Wallet</p>
-              <p className="text-sm text-gray-400">CricAdda Wallet Balance</p>
-            </div>
-          </label>
+          <PaymentOption value="wallet" label="CricAdda Wallet" sub="Use your wallet balance" />
         </div>
 
-        {/* Terms & Conditions */}
-        <div className="mb-6 text-xs text-gray-400">
-          <p>
-            By clicking Pay, you agree to the terms and conditions. Your payment
-            will be processed securely.
-          </p>
-        </div>
+        {/* Terms */}
+        <p className="text-white/35 text-xs mb-5 leading-relaxed">
+          By clicking Pay, you agree to our terms and conditions. Your payment will be processed securely.
+        </p>
 
         {/* Buttons */}
         <div className="flex gap-3">
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 font-medium"
             disabled={processing}
+            className="flex-1 px-4 py-3 rounded-xl bg-white/8 text-white/70 font-semibold text-sm hover:bg-white/15 transition-colors disabled:opacity-50"
           >
             Cancel
           </button>
           <button
             onClick={handlePayment}
             disabled={processing}
-            className="flex-1 px-4 py-3 bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white rounded-lg font-bold transition"
+            className="flex-1 px-4 py-3 rounded-xl bg-[#f4b942] text-[#0a1628] font-bold text-sm hover:opacity-90 transition-opacity disabled:opacity-50"
           >
-            {processing ? "Processing..." : `Pay ₹${amount}`}
+            {processing ? "Processing…" : `Pay ₹${amount}`}
           </button>
         </div>
       </div>

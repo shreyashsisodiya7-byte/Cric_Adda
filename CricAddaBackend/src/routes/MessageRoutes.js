@@ -1,15 +1,22 @@
 import express from "express";
-import { sendMessage, getMessagesForBooking, getConversationsForUser } from "../controllers/MessageControllers.js";
+import {
+  sendMessage,
+  getMessagesForBooking,
+  getConversationsForUser,
+  checkBlock,
+  blockUser,
+  unblockUser,
+} from "../controllers/MessageControllers.js";
+import { verifyToken } from "../middlerware/authMiddleware.js";
 
 const router = express.Router();
 
-// Send a message for a booking
 router.post("/send", sendMessage);
-
-// Get all messages for a specific booking
 router.get("/booking/:bookingId", getMessagesForBooking);
-
-// Get all conversations (active bookings) for a user
 router.get("/conversations/:userId", getConversationsForUser);
+
+router.get("/block/check", verifyToken, checkBlock);
+router.post("/block", verifyToken, blockUser);
+router.delete("/block/:blockedId", verifyToken, unblockUser);
 
 export default router;

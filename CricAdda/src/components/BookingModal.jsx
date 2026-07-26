@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useContext } from "react";
 import axios from "axios";
 import { API_URL } from "../api";
+import UniversalContext from "../context/UniversalContext";
 
 function BookingModal({ playerId, playerName, playerFee, onClose, onSuccess, ownerId, ownerName, ownerCity, date }) {
   const [loading, setLoading] = useState(false);
@@ -15,23 +16,20 @@ function BookingModal({ playerId, playerName, playerFee, onClose, onSuccess, own
     notes: "",
     paymentAmount: playerFee || "",
   });
+  const { setModalOpen } = useContext(UniversalContext);
 
-  // Update eventDate when date prop changes
   useEffect(() => {
-    if (date) {
-      setFormData((prev) => ({
-        ...prev,
-        eventDate: date,
-      }));
-    }
+  setModalOpen(true);
+  return () => setModalOpen(false); 
+}, [setModalOpen]);
+
+  useEffect(() => {
+    if (date) setFormData((prev) => ({ ...prev, eventDate: date }));
   }, [date]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
@@ -40,14 +38,11 @@ function BookingModal({ playerId, playerName, playerFee, onClose, onSuccess, own
     setError(null);
 
     try {
-      // Validate required fields
       if (!formData.eventName || !formData.eventDate) {
         setError("Event name and date are required");
         setLoading(false);
         return;
       }
-
-      // Check if owner info is available
       if (!ownerId || !ownerName) {
         setError("Please login first before booking a player");
         setLoading(false);
@@ -69,30 +64,10 @@ function BookingModal({ playerId, playerName, playerFee, onClose, onSuccess, own
         notes: (formData.notes || "").trim(),
       };
 
-      console.log("Booking data being sent:", bookingData);
-      console.log("API URL:", `${API_URL}/bookings/request`);
-      console.log("ownerId:", ownerId);
-console.log("ownerName:", ownerName);
-console.log("playerId:", playerId);
-console.log("playerName:", playerName);
-console.log("eventName:", formData.eventName);
-console.log("eventDate:", formData.eventDate);
-
       const token = localStorage.getItem("token");
-
-      // Create booking request
-      const response = await axios.post(
-        `${API_URL}/bookings/request`,
-        bookingData,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          }
-        }
-      );
-
-      console.log("Booking response:", response.data);
+      const response = await axios.post(`${API_URL}/bookings/request`, bookingData, {
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      });
 
       if (response.data.success) {
         alert("Booking request sent! Waiting for player confirmation.");
@@ -102,8 +77,6 @@ console.log("eventDate:", formData.eventDate);
         setError(response.data.message || "Failed to send booking request");
       }
     } catch (err) {
-      console.error("Full Booking error:", err);
-      console.error("Error response:", err.response?.data);
       const errorMsg = err.response?.data?.message || err.response?.data?.error || err.message || "Error sending booking request";
       setError(errorMsg);
     } finally {
@@ -111,53 +84,57 @@ console.log("eventDate:", formData.eventDate);
     }
   };
 
+  const inputCls = "w-full px-4 py-2.5 rounded-xl bg-[#0d1e38] border border-white/15 text-white placeholder-white/35 outline-none focus:border-[#f4b942] transition-colors text-sm";
+  const labelCls = "block text-xs font-semibold text-white/60 uppercase tracking-wider mb-1.5";
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-gray-800 rounded-2xl p-6 max-w-md w-full max-h-96 overflow-y-auto hide-scrollbar">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div
+        className="bg-[#0d1e38] rounded-2xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto hide-scrollbar shadow-2xl"
+        style={{ border: "1px solid rgba(255,255,255,0.1)" }}
+      >
+        {/* Header */}
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-white">Book {playerName}</h2>
+          <div>
+            <h2 className="text-xl font-bold text-white">Book {playerName}</h2>
+            <p className="text-white/45 text-xs mt-0.5">Fill in the event details below</p>
+          </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-white text-2xl"
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-all"
           >
             ✕
           </button>
         </div>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-900 border border-red-500 rounded-lg">
-            <p className="text-red-200 text-sm">{error}</p>
+          <div className="mb-4 p-3 bg-red-500/15 border border-red-500/30 rounded-xl">
+            <p className="text-red-300 text-sm">{error}</p>
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Event Name */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Event Name *
-            </label>
+            <label className={labelCls}>Event Name *</label>
             <input
               type="text"
               name="eventName"
               value={formData.eventName}
               onChange={handleChange}
               placeholder="e.g., City Championship 2026"
-              className="w-full px-3 py-2 bg-gray-700 text-white rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+              className={inputCls}
               required
             />
           </div>
 
-          {/* Event Date */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Event Date *
-            </label>
+            <label className={labelCls}>Event Date *</label>
             {date ? (
               <input
                 type="text"
                 value={formData.eventDate}
                 disabled
-                className="w-full px-3 py-2 bg-gray-700 text-white rounded-lg outline-none border border-green-500"
+                className={`${inputCls} border-[#f4b942]/40 text-[#f4b942] opacity-80 cursor-not-allowed`}
               />
             ) : (
               <input
@@ -165,37 +142,31 @@ console.log("eventDate:", formData.eventDate);
                 name="eventDate"
                 value={formData.eventDate}
                 onChange={handleChange}
-                className="w-full px-3 py-2 bg-gray-700 text-white rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+                className={inputCls}
                 required
               />
             )}
           </div>
 
-          {/* Event Location */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Event Location
-            </label>
+            <label className={labelCls}>Event Location</label>
             <input
               type="text"
               name="eventLocation"
               value={formData.eventLocation}
               onChange={handleChange}
               placeholder="e.g., Delhi Cricket Stadium"
-              className="w-full px-3 py-2 bg-gray-700 text-white rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+              className={inputCls}
             />
           </div>
 
-          {/* Event Type */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Event Type
-            </label>
+            <label className={labelCls}>Event Type</label>
             <select
               name="eventType"
               value={formData.eventType}
               onChange={handleChange}
-              className="w-full px-3 py-2 bg-gray-700 text-white rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+              className={inputCls}
             >
               <option value="match">Match</option>
               <option value="tournament">Tournament</option>
@@ -204,56 +175,47 @@ console.log("eventDate:", formData.eventDate);
             </select>
           </div>
 
-          {/* Payment Amount */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Offer Amount (₹)
-            </label>
+            <label className={labelCls}>Offer Amount (₹)</label>
             <input
               type="number"
               name="paymentAmount"
               value={formData.paymentAmount}
               onChange={handleChange}
               placeholder="0"
-              className="w-full px-3 py-2 bg-gray-700 text-white rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+              className={inputCls}
             />
             {playerFee && (
-              <p className="text-xs text-gray-400 mt-1">
-                Player's standard fee: ₹{playerFee}
-              </p>
+              <p className="text-white/40 text-xs mt-1">Player's standard fee: <span className="text-[#f4b942]">₹{playerFee}</span></p>
             )}
           </div>
 
-          {/* Message */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Message to Player
-            </label>
+            <label className={labelCls}>Message to Player</label>
             <textarea
               name="message"
               value={formData.message}
               onChange={handleChange}
-              placeholder="Tell the player about your event..."
-              className="w-full px-3 py-2 bg-gray-700 text-white rounded-lg outline-none focus:ring-2 focus:ring-blue-500 resize-none h-20"
-            ></textarea>
+              placeholder="Tell the player about your event…"
+              className={`${inputCls} resize-none h-20`}
+            />
           </div>
 
-          {/* Buttons */}
-          <div className="flex gap-3 mt-6">
+          <div className="flex gap-3 pt-2">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600"
               disabled={loading}
+              className="flex-1 px-4 py-2.5 rounded-xl bg-white/8 text-white/70 font-semibold text-sm hover:bg-white/15 transition-colors disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
               disabled={loading}
+              className="flex-1 px-4 py-2.5 rounded-xl bg-[#f4b942] text-[#0a1628] font-bold text-sm hover:opacity-90 transition-opacity disabled:opacity-50"
             >
-              {loading ? "Sending..." : "Send Request"}
+              {loading ? "Sending…" : "Send Request"}
             </button>
           </div>
         </form>

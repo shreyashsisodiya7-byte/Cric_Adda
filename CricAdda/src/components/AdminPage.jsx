@@ -9,7 +9,7 @@ const authHeaders = () => {
 };
 
 const StatCard = ({ label, value, color }) => (
-  <div className="bg-[#0B1220] border border-gray-700 rounded-2xl p-6 text-center">
+  <div className="bg-[#0B1220] border border-white/10 rounded-2xl p-6 text-center">
     <p className={`text-4xl font-bold ${color}`}>{value}</p>
     <p className="text-gray-400 text-sm mt-2 uppercase tracking-widest">{label}</p>
   </div>
@@ -162,8 +162,8 @@ export default function AdminPage() {
 
   // ── status badge ──
   const StatusBadge = ({ status, archived }) => {
-    if (archived) return <span className="px-2 py-1 rounded-full text-xs bg-gray-700 text-gray-300">Archived</span>;
-    if (status === "Available") return <span className="px-2 py-1 rounded-full text-xs bg-green-900 text-green-300">Available</span>;
+    if (archived) return <span className="px-2 py-1 rounded-full text-xs bg-[#0d1e38]/70 text-gray-300">Archived</span>;
+    if (status === "Available") return <span className="px-2 py-1 rounded-full text-xs bg-[#d1fae5] text-[#065f46]">Available</span>;
     return <span className="px-2 py-1 rounded-full text-xs bg-red-900 text-red-300">{status || "N/A"}</span>;
   };
 
@@ -174,11 +174,11 @@ export default function AdminPage() {
   );
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-[#020617] via-[#0B1220] to-[#020617] text-white px-4 md:px-10 py-10 mt-8">
+    <div className="min-h-screen bg-[#0a1628] text-white px-4 md:px-10 py-10 mt-8">
 
       {/* Toast */}
       {toast && (
-        <div className={`fixed top-6 right-6 z-50 px-6 py-3 rounded-xl shadow-lg text-white text-sm font-medium transition-all ${toast.type === "error" ? "bg-red-700" : "bg-green-700"}`}>
+        <div className={`fixed top-6 right-6 z-50 px-6 py-3 rounded-xl shadow-lg text-white text-sm font-medium transition-all ${toast.type === "error" ? "bg-red-600" : "bg-[#065f46]"}`}>
           {toast.msg}
         </div>
       )}
@@ -195,7 +195,7 @@ export default function AdminPage() {
           <StatCard label="Total Users" value={stats.totalUsers} color="text-blue-400" />
           <StatCard label="Available" value={stats.availablePlayers} color="text-green-400" />
           <StatCard label="Archived" value={stats.archivedPlayers} color="text-gray-400" />
-          <StatCard label="Total Bookings" value={stats.totalBookings} color="text-purple-400" />
+          <StatCard label="Total Bookings" value={stats.totalBookings} color="text-[#f4b942]" />
           <StatCard label="Pending" value={stats.pendingBookings} color="text-yellow-400" />
           <StatCard label="Accepted" value={stats.acceptedBookings} color="text-emerald-400" />
         </div>
@@ -205,13 +205,13 @@ export default function AdminPage() {
       <div className="flex gap-4 mb-6">
         <button
           onClick={() => setTab("users")}
-          className={`px-6 py-2 rounded-xl font-semibold transition ${tab === "users" ? "bg-blue-600" : "bg-gray-800 hover:bg-gray-700"}`}
+          className={`px-6 py-2 rounded-xl font-semibold transition ${tab === "users" ? "bg-[#0a1628]" : "bg-[#0d1e38] hover:bg-[#0d1e38]/70"}`}
         >
           👤 Users & Players
         </button>
         <button
           onClick={() => setTab("bookings")}
-          className={`px-6 py-2 rounded-xl font-semibold transition ${tab === "bookings" ? "bg-purple-600" : "bg-gray-800 hover:bg-gray-700"}`}
+          className={`px-6 py-2 rounded-xl font-semibold transition ${tab === "bookings" ? "bg-[#0a1628]" : "bg-[#0d1e38] hover:bg-[#0d1e38]/70"}`}
         >
           📅 Bookings
         </button>
@@ -227,12 +227,12 @@ export default function AdminPage() {
               placeholder="Search by name, email or city..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="flex-1 px-4 py-2 rounded-xl bg-gray-800 outline-none"
+              className="flex-1 px-4 py-2 rounded-xl bg-[#0d1e38] outline-none"
             />
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-4 py-2 rounded-xl bg-gray-800 outline-none"
+              className="px-4 py-2 rounded-xl bg-[#0d1e38] outline-none"
             >
               <option>All</option>
               <option>Available</option>
@@ -248,11 +248,11 @@ export default function AdminPage() {
             {filteredUsers.map((user) => (
               <div
                 key={user._id}
-                className={`bg-[#0B1220] border rounded-2xl p-5 flex flex-col gap-3 ${user.archived ? "border-gray-700 opacity-60" : "border-gray-700"}`}
+                className={`bg-[#0B1220] border rounded-2xl p-5 flex flex-col gap-3 ${user.archived ? "border-white/10 opacity-60" : "border-white/10"}`}
               >
                 {/* Top row */}
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-lg font-bold shrink-0">
+                  <div className="w-12 h-12 rounded-full bg-[#f4b942] flex items-center justify-center text-lg font-bold shrink-0">
                     {user.photo
                       ? <img src={`${UPLOADS_URL}/${user.photo}`} className="w-full h-full object-cover rounded-full" alt="" />
                       : user.Fullname?.charAt(0).toUpperCase()
@@ -279,13 +279,13 @@ export default function AdminPage() {
                 <div className="grid grid-cols-2 gap-2 mt-1">
                   <button
                     onClick={() => openEdit(user)}
-                    className="py-1.5 rounded-lg bg-blue-700 hover:bg-blue-600 text-sm transition"
+                    className="py-1.5 rounded-lg bg-blue-700 hover:bg-[#0a1628] text-sm transition"
                   >
                     ✏️ Edit
                   </button>
                   <button
                     onClick={() => handleDeleteUser(user._id, user.Fullname)}
-                    className="py-1.5 rounded-lg bg-red-800 hover:bg-red-700 text-sm transition"
+                    className="py-1.5 rounded-lg bg-red-800 hover:bg-red-600 text-sm transition"
                   >
                     🗑️ Delete
                   </button>
@@ -297,7 +297,7 @@ export default function AdminPage() {
                   </button>
                   <button
                     onClick={() => handleArchive(user._id, !user.archived)}
-                    className="py-1.5 rounded-lg bg-gray-700 hover:bg-gray-600 text-sm transition"
+                    className="py-1.5 rounded-lg bg-[#0d1e38]/70 hover:bg-white/15 text-sm transition"
                   >
                     {user.archived ? "📤 Unarchive" : "📦 Archive"}
                   </button>
@@ -310,9 +310,9 @@ export default function AdminPage() {
 
       {/* ── BOOKINGS TAB ── */}
       {tab === "bookings" && (
-        <div className="overflow-x-auto rounded-2xl border border-gray-700">
+        <div className="overflow-x-auto rounded-2xl border border-white/10">
           <table className="w-full text-sm">
-            <thead className="bg-gray-800 text-gray-400 uppercase text-xs">
+            <thead className="bg-[#0d1e38] text-gray-400 uppercase text-xs">
               <tr>
                 <th className="px-4 py-3 text-left">Owner</th>
                 <th className="px-4 py-3 text-left">Player</th>
@@ -325,14 +325,14 @@ export default function AdminPage() {
             </thead>
             <tbody className="divide-y divide-gray-800">
               {bookings.map((b) => (
-                <tr key={b._id} className="hover:bg-gray-800/50 transition">
+                <tr key={b._id} className="hover:bg-[#0d1e38]/50 transition">
                   <td className="px-4 py-3">{b.ownerName}</td>
                   <td className="px-4 py-3">{b.playerName}</td>
                   <td className="px-4 py-3">{b.eventName}</td>
                   <td className="px-4 py-3">{new Date(b.eventDate).toLocaleDateString()}</td>
                   <td className="px-4 py-3">
                     <span className={`px-2 py-1 rounded-full text-xs ${
-                      b.status === "accepted" ? "bg-green-900 text-green-300"
+                      b.status === "accepted" ? "bg-[#d1fae5] text-[#065f46]"
                       : b.status === "rejected" ? "bg-red-900 text-red-300"
                       : "bg-yellow-900 text-yellow-300"
                     }`}>
@@ -343,7 +343,7 @@ export default function AdminPage() {
                   <td className="px-4 py-3">
                     <button
                       onClick={() => handleDeleteBooking(b._id)}
-                      className="px-3 py-1 bg-red-800 hover:bg-red-700 rounded-lg text-xs transition"
+                      className="px-3 py-1 bg-red-800 hover:bg-red-600 rounded-lg text-xs transition"
                     >
                       Delete
                     </button>
@@ -361,7 +361,7 @@ export default function AdminPage() {
       {/* ── EDIT MODAL ── */}
       {editingUser && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-          <div className="bg-[#0B1220] border border-gray-700 rounded-2xl p-6 w-full max-w-md">
+          <div className="bg-[#0B1220] border border-white/10 rounded-2xl p-6 w-full max-w-md">
             <h2 className="text-xl font-bold mb-5">✏️ Edit — {editingUser.Fullname}</h2>
 
             <div className="space-y-3">
@@ -376,7 +376,7 @@ export default function AdminPage() {
                     type={type}
                     value={editForm[key] || ""}
                     onChange={(e) => setEditForm((p) => ({ ...p, [key]: e.target.value }))}
-                    className="w-full px-3 py-2 rounded-lg bg-gray-800 outline-none border border-gray-700 focus:border-blue-500"
+                    className="w-full px-3 py-2 rounded-lg bg-[#0d1e38] outline-none border border-white/10 focus:border-[#f4b942]"
                   />
                 </div>
               ))}
@@ -386,7 +386,7 @@ export default function AdminPage() {
                 <select
                   value={editForm.role}
                   onChange={(e) => setEditForm((p) => ({ ...p, role: e.target.value }))}
-                  className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 outline-none"
+                  className="w-full px-3 py-2 rounded-lg bg-[#0d1e38] border border-white/10 outline-none"
                 >
                   {["Batsman", "Bowler", "All Rounder", "Wicket Keeper"].map((r) => (
                     <option key={r}>{r}</option>
@@ -399,7 +399,7 @@ export default function AdminPage() {
                 <select
                   value={editForm.userType}
                   onChange={(e) => setEditForm((p) => ({ ...p, userType: e.target.value }))}
-                  className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 outline-none"
+                  className="w-full px-3 py-2 rounded-lg bg-[#0d1e38] border border-white/10 outline-none"
                 >
                   <option>Player</option>
                   <option>Owner</option>
@@ -411,7 +411,7 @@ export default function AdminPage() {
                 <select
                   value={editForm.status}
                   onChange={(e) => setEditForm((p) => ({ ...p, status: e.target.value }))}
-                  className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 outline-none"
+                  className="w-full px-3 py-2 rounded-lg bg-[#0d1e38] border border-white/10 outline-none"
                 >
                   <option>Available</option>
                   <option>Not Available</option>
@@ -422,13 +422,13 @@ export default function AdminPage() {
             <div className="flex gap-3 mt-6">
               <button
                 onClick={() => setEditingUser(null)}
-                className="flex-1 py-2 rounded-xl bg-gray-700 hover:bg-gray-600 transition"
+                className="flex-1 py-2 rounded-xl bg-[#0d1e38]/70 hover:bg-white/15 transition"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveEdit}
-                className="flex-1 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 transition font-semibold"
+                className="flex-1 py-2 rounded-xl bg-[#0a1628] hover:bg-[#f4b942] transition font-semibold"
               >
                 💾 Save
               </button>

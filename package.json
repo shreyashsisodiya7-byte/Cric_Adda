@@ -1,6 +1,9 @@
 {
   "dependencies": {
-    "concurrently": "^9.2.1"
+    "concurrently": "^9.2.1",
+    "nodemailer": "^8.0.7",
+    "react-toastify": "^11.1.0",
+    "twilio": "^6.0.2"
   },
   "scripts": {
     "dev": "concurrently \"npm run server\" \"npm run client\"",
@@ -9,6 +12,4 @@
     "build": "cd CricAdda && npm install && npm run build",
     "vercel-build": "cd CricAdda && npm install && npm run build"
   }
-  
 }
-

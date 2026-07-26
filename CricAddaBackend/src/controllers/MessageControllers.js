@@ -1,5 +1,6 @@
 import Message from "../models/MessageModels.js";
 import Booking from "../models/BookingModels.js";
+import Block from "../models/BlockModel.js";
 
 export const sendMessage = async (req, res) => {
   try {
@@ -61,7 +62,6 @@ export const getConversationsForUser = async (req, res) => {
   try {
     const { userId } = req.params;
 
-    // Find all bookings where user is either owner or player, with accepted status
     const acceptedBookings = await Booking.find({
       $and: [
         {
@@ -79,8 +79,7 @@ export const getConversationsForUser = async (req, res) => {
     for (const booking of acceptedBookings) {
       const otherUserId = booking.ownerId.toString() === userId.toString() ? booking.playerId : booking.ownerId;
       const otherUserName = booking.ownerId.toString() === userId.toString() ? booking.playerName : booking.ownerName;
-      
-      // Get last message for this booking
+
       const lastMessage = await Message.findOne({ bookingId: booking._id }).sort({ createdAt: -1 });
 
       conversations.push({
@@ -105,5 +104,48 @@ export const getConversationsForUser = async (req, res) => {
       message: "Error fetching conversations",
       error: error.message,
     });
+  }
+};
+
+// GET /messages/block/check?blockerId=&blockedId=
+export const checkBlock = async (req, res) => {
+  try {
+    const { blockerId, blockedId } = req.query;
+    const [youBlockedThem, theyBlockedYou] = await Promise.all([
+      Block.exists({ blockerId, blockedId }),
+      Block.exists({ blockerId: blockedId, blockedId: blockerId }),
+    ]);
+    return res.status(200).json({
+      success: true,
+      isBlocked: !!(youBlockedThem || theyBlockedYou),
+      youBlockedThem: !!youBlockedThem,
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// POST /messages/block
+export const blockUser = async (req, res) => {
+  try {
+    const { blockerId, blockedId } = req.body;
+    await Block.create({ blockerId, blockedId });
+    return res.status(201).json({ success: true, message: "User blocked" });
+  } catch (error) {
+    if (error.code === 11000)
+      return res.status(200).json({ success: true, message: "Already blocked" });
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// DELETE /messages/block/:blockedId?blockerId=
+export const unblockUser = async (req, res) => {
+  try {
+    const { blockedId } = req.params;
+    const { blockerId } = req.query;
+    await Block.deleteOne({ blockerId, blockedId });
+    return res.status(200).json({ success: true, message: "User unblocked" });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
